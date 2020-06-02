@@ -1,0 +1,28 @@
+{
+  "name": "roll-predictor-bot",
+  "version": "0.0.3",
+  "description": "Just a discord bot trying it's best to roll given it's number. It returns it's rollCount after getting the target number.",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^12.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fbarda/rollCounterBot.git"
+  },
+  "keywords": [
+    "roll",
+    "discord",
+    "discord.js"
+  ],
+  "author": "Arda Aydın (fbarda)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fbarda/rollCounterBot/issues"
+  },
+  "homepage": "https://github.com/fbarda/rollCounterBot#readme"
+}
