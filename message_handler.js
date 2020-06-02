@@ -40,7 +40,7 @@ function messageHandler(message) {
     if (messageResponseType === invalidUsageMessage) {
         message.channel.send(
             `Öyle yazmayacan, \`${prefix} sayi\` yazacaksın, tabii sayi da 1'den büyük olsun, zar koleksiyonumuz geniş ama o kadar da değil.
-        He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar canım.`
+He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar canım.`
         );
         return;
     }
@@ -59,13 +59,13 @@ function messageHandler(message) {
     }
 
     //Going to roll the dice now.
-    
+
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, target: argument });
     const sentMessage = message.channel.send(beforeRollMessage),
         rollCount = rollMachine(Number(argument));
-        const afterRollMessage  = rollCount.then(rollCount=>afterRollMessageConstructor({target:argument,rollCount,userID}));
-        sentMessage.then(sentMessage=>sentMessage.edit(afterRollMessage));
-        return;        
+    const afterRollMessage = rollCount.then(rollCount => afterRollMessageConstructor({ target: argument, rollCount, userID }));
+    sentMessage.then(sentMessage => sentMessage.edit(afterRollMessage));
+    return;
 }
 module.exports = exports = messageHandler;
