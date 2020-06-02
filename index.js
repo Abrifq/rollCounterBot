@@ -1,4 +1,4 @@
-const debugArguments = require(process).argv.slice(2),
+const debugArguments = require("process").argv.slice(2),
     onMessageHandler = require("./message_handler"),
     discordClient = new (require("discord.js").Client)();
 const config = (function (args) {
