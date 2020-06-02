@@ -9,7 +9,12 @@ const config = (function (args) {
     }
 })(debugArguments);
 
-discordClient.on("message",onMessageHandler);
-discordClient.once("ready",()=>{console.log("Discord bot SHOULD be online.");});
+discordClient.on("message", onMessageHandler);
+discordClient.once("ready", () => {
+    console.log("Discord bot SHOULD be online.");
+    discordClient.generateInvite(141312)
+    .then(link => "Invite link is " + link)
+    .then(console.log);
+});
 discordClient.login(config.token);
 
