@@ -1,5 +1,5 @@
-async function roll(max) {
-    return Math.ceil(await Math.random() * max);
+function roll(max) {
+    return Math.ceil(Math.random() * max);
 }
 
 async function getRollCount(targetNumber) {

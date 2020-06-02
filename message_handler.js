@@ -39,7 +39,7 @@ function messageHandler(message) {
     }
     if (messageResponseType === invalidUsageMessage) {
         message.channel.send(
-            `Öyle yazmayacan, \`${prefix} sayi\ yazacaksın, tabii sayi da 1'den büyük olsun, zar koleksiyonumuz geniş ama o kadar da değil.
+            `Öyle yazmayacan, \`${prefix} sayi\` yazacaksın, tabii sayi da 1'den büyük olsun, zar koleksiyonumuz geniş ama o kadar da değil.
         He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar canım.`
         );
         return;
