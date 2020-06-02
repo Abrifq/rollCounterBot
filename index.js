@@ -12,7 +12,7 @@ const config = (function (args) {
 discordClient.on("message", onMessageHandler);
 discordClient.once("ready", () => {
     console.log("Discord bot SHOULD be online.");
-    discordClient.generateInvite(141312)
+    discordClient.generateInvite(10240)
     .then(link => "Invite link is " + link)
     .then(console.log);
 });
