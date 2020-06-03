@@ -8,8 +8,8 @@ discordClient.on("message", onMessageHandler);
 discordClient.once("ready", () => {
     console.log("Discord bot SHOULD be online.");
     discordClient.generateInvite(10240)
-    .then(link => "Invite link is " + link)
-    .then(console.log);
+        .then(link => "Invite link is " + link)
+        .then(console.log);
 });
 discordClient.login(config.token);
 

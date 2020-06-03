@@ -32,7 +32,6 @@ function afterRollMessageConstructor({ target, rollCount, userID }) {
  */
 function beforeRollMessageConstructor({ userID, target }) {
     return `<@${userID}>, bana şans dile, ${target} sayısı için ${target} yüzlü zarımı atmaya başladım.${target > 1000 ? " Büyük sayı yani." : ""}`;
-
 }
 
 async function messageHandler(message) {
@@ -71,9 +70,10 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     console.log("Valid usage. Rolling for " + target);
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, target });
+
     const sentMessage = await message.channel.send(beforeRollMessage)
-        .then(message => { console.log(message.content); return message }),
-        rollCount = rollMachine(Number(argument)).then(tee);
+        .then(message => { console.log(message.content); return message });
+    const rollCount = promiseTimerContainer(rollMachine(Number(argument)).then(tee), putElapsedTime.next, 1000);
     const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID })).then(tee);
     sentMessage.edit(afterRollMessage)
         .then(message => { console.log(message.content); return message });
