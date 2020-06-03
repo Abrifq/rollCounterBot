@@ -66,15 +66,15 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
         message.channel.send("Github'da beni ziyaret edin! https://github.com/fbarda/rollCounterBot");
         return;
     }
-
+    const target = Number.parseInt(argument);
     //Going to roll the dice now.
-    console.log("Valid usage. Argument is " + argument);
+    console.log("Valid usage. Rolling for " + target);
     const userID = message.member.id;
-    const beforeRollMessage = beforeRollMessageConstructor({ userID, target: argument });
+    const beforeRollMessage = beforeRollMessageConstructor({ userID, target });
     const sentMessage = await message.channel.send(beforeRollMessage)
         .then(message => { console.log(message.content); return message }),
         rollCount = rollMachine(Number(argument)).then(tee);
-    const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target: argument, rollCount, userID })).then(tee);
+    const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID })).then(tee);
     sentMessage.edit(afterRollMessage)
         .then(message => { console.log(message.content); return message });
     return;
