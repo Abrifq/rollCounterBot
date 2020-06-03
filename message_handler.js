@@ -1,4 +1,5 @@
 const rollMachine = require("./roll"),
+    donators = require("./config_handler")().donators,
     tee = logValue => { console.log(logValue); return logValue; },
     prefix = "kaçTane",
     validMessage = "valid",
@@ -24,6 +25,7 @@ function validCommandChecker(messageContent) {
  * @param {{target:number|string,rollCount:number|string,userID:string}} infos 
  */
 function afterRollMessageConstructor({ target, rollCount, userID }) {
+    if (donators.includes(userID)) { return `<@${userID}> aşkom sonunda ${target} attım${rollCount > 1000 ? " ama ancak " : ", "}${rollCount < 100 ? "hem de " : ""} ${rollCount} denemede attım aşkosu.`; }
     return `<@${userID}>, ${target} sayısı ${rollCount > 100 ? "anca " : ""}${rollCount} denemede geldi.`;
 }
 /**
@@ -31,9 +33,24 @@ function afterRollMessageConstructor({ target, rollCount, userID }) {
  * @param {{target:number|string,userID:string}} infos 
  */
 function beforeRollMessageConstructor({ userID, target }) {
+    if (donators.includes(userID)) { return `<@${userID}> aşkım bana şans dile, atıyorum ${target} yüzlü zarımı, senin için ${target} atacağım bebeğim!${target > 1000 ? " Ama biraz büyük sayı, beklemen gerekebilir aşkoom. :kiss:" : ""}`; }
     return `<@${userID}>, bana şans dile, ${target} sayısı için ${target} yüzlü zarımı atmaya başladım.${target > 1000 ? " Büyük sayı yani." : ""}`;
 }
 
+/**
+ * @desc Calls a function every `delay` milliseconds until the promise resolves. The callback will be called at least once.
+ * @param {Promise<*>} promise - A promise that will eventually resolve.
+ * @param {function()=>void} callback A callback function that will have no arguments.
+ * @param {number} delay The delay of calling the callback, in milliseconds.
+ */
+
+async function promiseTimerContainer(promise, callback, delay) {
+    setImmediate(callback);
+    const timerID = setInterval(callback, delay);
+    await promise;
+    clearInterval(timerID);
+    return promise;
+}
 async function messageHandler(message) {
     const messageResponseType = validCommandChecker(message.content);
     if (messageResponseType === ignoreMessage) { return; }
@@ -73,10 +90,19 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
 
     const sentMessage = await message.channel.send(beforeRollMessage)
         .then(message => { console.log(message.content); return message });
+    const putElapsedTime = (async function* timerCallbackGenerator() {
+        let calledTimes = 0;
+        while (true) {
+            await sentMessage.edit(beforeRollMessage + ` ${calledTimes} saniye geçti.`);
+            calledTimes++;
+            yield;
+        }
+    })();
     const rollCount = promiseTimerContainer(rollMachine(Number(argument)).then(tee), putElapsedTime.next, 1000);
     const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID })).then(tee);
     sentMessage.edit(afterRollMessage)
         .then(message => { console.log(message.content); return message });
+    await putElapsedTime.return();
     return;
 }
 module.exports = exports = messageHandler;
