@@ -1,7 +1,7 @@
 const debugArguments = require("process").argv.slice(2);
 const config = require("./config_handler")(debugArguments);
-const onMessageHandler = require("./message_handler"),
-    discordClient = new (require("discord.js").Client)();
+const onMessageHandler = require("./message_handler"), //jshint -W126
+    discordClient = new (require("discord.js").Client)(); //jshint +W126
 
 
 discordClient.on("message", onMessageHandler);
