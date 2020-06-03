@@ -71,11 +71,11 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     console.log("Valid usage. Argument is " + argument);
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, target: argument });
-    const sentMessage = message.channel.send(beforeRollMessage)
+    const sentMessage = await message.channel.send(beforeRollMessage)
         .then(message => { console.log(message.content); return message }),
         rollCount = rollMachine(Number(argument)).then(tee);
     const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target: argument, rollCount, userID })).then(tee);
-    sentMessage.then(sentMessage => sentMessage.edit(afterRollMessage))
+    sentMessage.edit(afterRollMessage)
         .then(message => { console.log(message.content); return message });
     return;
 }
