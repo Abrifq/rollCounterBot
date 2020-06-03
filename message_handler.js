@@ -1,4 +1,5 @@
 const rollMachine = require("./roll"),
+    tee = logValue => { console.log(logValue); return logValue; },
     prefix = "kaçTane",
     validMessage = "valid",
     invalidUsageMessage = "argumentInvalid",
@@ -18,15 +19,23 @@ function validCommandChecker(messageContent) {
     if (Number(argument) > 0) { return validMessage } // roll dice
     return invalidUsageMessage;
 }
+/**
+ * @returns {string}
+ * @param {{target:number|string,rollCount:number|string,userID:string}} infos 
+ */
 function afterRollMessageConstructor({ target, rollCount, userID }) {
     return `<@${userID}>, ${target} sayısı ${rollCount > 100 ? "anca " : ""}${rollCount} denemede geldi.`;
 }
+/**
+ * @returns {string}
+ * @param {{target:number|string,userID:string}} infos 
+ */
 function beforeRollMessageConstructor({ userID, target }) {
     return `<@${userID}>, bana şans dile, ${target} sayısı için ${target} yüzlü zarımı atmaya başladım.${target > 1000 ? " Büyük sayı yani." : ""}`;
 
 }
 
-function messageHandler(message) {
+async function messageHandler(message) {
     const messageResponseType = validCommandChecker(message.content);
     if (messageResponseType === ignoreMessage) { return; }
     if (messageResponseType === innerError) {
@@ -59,13 +68,15 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     }
 
     //Going to roll the dice now.
-
+    console.log("Valid usage. Argument is " + argument);
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, target: argument });
-    const sentMessage = message.channel.send(beforeRollMessage),
-        rollCount = rollMachine(Number(argument));
-    const afterRollMessage = rollCount.then(rollCount => afterRollMessageConstructor({ target: argument, rollCount, userID }));
-    sentMessage.then(sentMessage => sentMessage.edit(afterRollMessage));
+    const sentMessage = message.channel.send(beforeRollMessage)
+        .then(message => { console.log(message.content); return message }),
+        rollCount = rollMachine(Number(argument)).then(tee);
+    const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target: argument, rollCount, userID })).then(tee);
+    sentMessage.then(sentMessage => sentMessage.edit(afterRollMessage))
+        .then(message => { console.log(message.content); return message });
     return;
 }
 module.exports = exports = messageHandler;
