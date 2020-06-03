@@ -1,4 +1,10 @@
-function roll(max) {
+const ForkedOutPromiseConstructor=require("./forkedOutPromise");
+const wait1Tick= function(){
+    const FoP = new ForkedOutPromiseConstructor();
+    setImmediate(FoP.resolve);
+    return FoP.promise;
+};
+async function roll(max) {
     return Math.ceil(Math.random() * max);
 }
 
@@ -9,6 +15,7 @@ async function getRollCount(targetNumber) {
     do {
         latestRandomNumber = await roll(targetNumber);
         rolls++;
+        await wait1Tick();
     } while (targetNumber !== latestRandomNumber);
     return rolls;
 }

@@ -1,0 +1,3 @@
+[submodule "forkedOutPromise"]
+	path = forkedOutPromise
+	url = https://github.com/fbarda/ForkedOutPromiseJS.git
