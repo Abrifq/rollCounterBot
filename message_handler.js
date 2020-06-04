@@ -93,12 +93,12 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     const putElapsedTime = (async function* timerCallbackGenerator() {
         let calledTimes = 0;
         while (true) {
-            sentMessage.edit(beforeRollMessage + ` ${calledTimes} saniye geçti.`);
+            sentMessage.edit(beforeRollMessage + ` Ben başlayalı ${calledTimes / 10} dakika geçti.`);
             calledTimes++;
             yield;
         }
     })();
-    const rollCount = promiseTimerContainer(rollMachine(Number(argument)).then(tee), ()=>{return putElapsedTime.next();}, 1000);
+    const rollCount = promiseTimerContainer(rollMachine(Number(argument)).then(tee), () => { return putElapsedTime.next(); }, 1000 * 6);
     const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID }))
         .then(tee);
     await sentMessage.edit(afterRollMessage)
