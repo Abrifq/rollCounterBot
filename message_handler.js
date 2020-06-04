@@ -1,6 +1,7 @@
 const rollMachine = require("./roll"),
     donators = require("./config_handler")().donators,
     tee = logValue => { console.log(logValue); return logValue; },
+    messageTee= message => { console.log("Sent Message: "+message.content); return message },
     prefix = "kaçTane",
     validMessage = "valid",
     invalidUsageMessage = "argumentInvalid",
@@ -89,7 +90,7 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     const beforeRollMessage = beforeRollMessageConstructor({ userID, target });
 
     const sentMessage = await message.channel.send(beforeRollMessage)
-        .then(message => { console.log(message.content); return message });
+        .then(messageTee);
     const putElapsedTime = (async function* timerCallbackGenerator() {
         let calledTimes = 0;
         while (true) {
@@ -102,7 +103,7 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID }))
         .then(tee);
     await sentMessage.edit(afterRollMessage)
-        .then(message => { console.log(message.content); return message });
+        .then(messageTee);
     await putElapsedTime.return();
     return;
 }
