@@ -89,7 +89,7 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, target });
 
-    const sentMessage = await message.channel.send(beforeRollMessage)
+    const sentMessage = await message.channel.send("<<espri").then(msg=>msg.edit(beforeRollMessage))
         .then(messageTee);
     const putElapsedTime = (async function* timerCallbackGenerator() {
         let calledTimes = 0;
