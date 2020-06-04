@@ -25,8 +25,8 @@ function validCommandChecker(messageContent) {
  * @param {{target:number|string,rollCount:number|string,userID:string}} infos 
  */
 function afterRollMessageConstructor({ target, rollCount, userID }) {
-    if (donators.includes(userID)) { return `<@${userID}> aşkom sonunda ${target} attım${rollCount > 1000 ? " ama ancak " : ", "}${rollCount < 100 ? "hem de " : ""}${rollCount} denemede attım aşkosu.`; }
-    return `<@${userID}>, ${target} sayısı ${rollCount > 100 ? "anca " : ""}${rollCount} denemede geldi.`;
+    if (donators.includes(userID)) { return `<@${userID}> aşkom sonunda ${target} attım${rollCount > 1000 ? " ama ancak " : ", "}${rollCount < 100 ? "hem de " : ""}${rollCount}. denemede attım aşkosu.`; }
+    return `<@${userID}>, ${target} sayısı ${rollCount > 100 ? "anca " : ""}${rollCount}. denemede geldi.`;
 }
 /**
  * @returns {string}
