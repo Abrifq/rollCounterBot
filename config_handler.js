@@ -1,4 +1,10 @@
 let cachedConfig;
+
+/**
+ * @returns {{token:string,donators:Array<string>}}
+ * @param {Array<string>} args 
+ */
+
 function config_getter  (args) {
     if(cachedConfig){return cachedConfig;}
     if (args.some(string => string === "local-mode")) {
