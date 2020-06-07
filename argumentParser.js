@@ -6,14 +6,14 @@ const { maxDiceSide, donators } = require("./config_handler")();
  * @throws {string} - Message constructed for the error. Just catch the message in a try-catch and return via returning and sending the message.
  * @async - The only reason I made it async is to let other messages to be processed too.
  */
-async function argumentParser({argumentArray, userID}) {
+async function argumentParser({ argumentArray, userID }) {
     //LOADS OF TODO
     const isDonator = donators.includes(userID);
-    const targetNumberCandidates = argumentArray.filter(string => Number(string) > 0).map(Number),
+    const targetNumberCandidates = argumentArray.filter(string => Number(string) > 0).map(Number).map(Math.floor).filter(number => number > 0),
         diceSideCandidates = argumentArray.filter(string => string.startsWith("d") &&
             string.slice(1) &&
             Number(string.slice(1)) > 0
-        ).map(diceSideCandidate => diceSideCandidate.slice(1)).map(Number);
+        ).map(diceSideCandidate => diceSideCandidate.slice(1)).map(Number).map(Math.floor).filter(number => number > 0);
     if (diceSideCandidates.length > 1 || targetNumberCandidates.length > 1) {
         throw `Herkese aynı anda birer zar ayırabiliyorum, birer tane yaz, sıranı bekle${
         isDonator ? " aşkım" : ""
