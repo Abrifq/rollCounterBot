@@ -17,7 +17,7 @@ const rollMachine = require("./roll"),
 
 async function rollHandler({ arguments: { target, diceSides }, message }) {
     console.log("Valid usage. Rolling for " + target + " with a " + diceSides + " sided dice.");
-    const userID = message.member.id;
+    const userID = message.author.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, arguments: { target, diceSides } });
     const waitingMessage = inQueueMessageConstructor({ userID });
     const sentMessage = await message.channel.send(waitingMessage); //queue information to users.

@@ -6,7 +6,7 @@ const { maxDiceSide, donators } = require("./config_handler")();
  * @throws {string} - Message constructed for the error. Just catch the message in a try-catch and return via returning and sending the message.
  * @async - The only reason I made it async is to let other messages to be processed too.
  */
-async function argumentParser(argumentArray, userID) {
+async function argumentParser({argumentArray, userID}) {
     //LOADS OF TODO
     const isDonator = donators.includes(userID);
     const targetNumberCandidates = argumentArray.filter(string => Number(string) > 0).map(Number),

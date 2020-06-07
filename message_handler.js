@@ -70,7 +70,7 @@ Github sayfama bakmak istersen sadece \`${prefix} github\` yazman yeterli!`
     let rollArguments;
     try {
         console.log(rawArguments.join(" "));
-        rollArguments = await argumentParser(rawArguments,message.member.id);
+        rollArguments = await argumentParser({argumentArray:rawArguments,userID:message.author.id});
     } catch (errorMessage) {
         console.log("oopsie: "+ errorMessage);
         return message.channel.send("err: "+errorMessage);
@@ -81,8 +81,8 @@ module.exports = exports = messageHandler;
 
 /**@typedef FakeMessage - Simplified version of "Discord.js"s Message class.
  * @prop {FakeMessageContent} content - Message's content
- * @prop {Object} member - Message's owner
- * @prop {string} member.id - Message's owner's id as a snowflake
+ * @prop {Object} author - Message's owner
+ * @prop {string} author.id - Message's owner's id as a snowflake
  * @prop {(content:FakeMessageContent)=>Promise<FakeMessage>} edit - Changes message's content with the given content. Resolves to new message if successful, however, the original message object can still be used and the resolved message will point to same message if not the same object.
  * @prop {Object} channel - The channel the message has been sent through.
  * @prop {(content:FakeMessageContent)=>Promise<FakeMessage>} channel.send - Sends a new message with the given content. Resolves to new message if successful.
