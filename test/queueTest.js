@@ -41,5 +41,5 @@ async function queueTester(tries = 100) {
     return;
 }
 
-exports= module.exports= queueTester;
+exports = module.exports = queueTester;
 

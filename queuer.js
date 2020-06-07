@@ -35,14 +35,14 @@ async function queueHandler(userID) {
 * @returns {Promise<()=>void>}
 * @async
 */
-exports =module.exports = async function waitInQueue(userID) {
+exports = module.exports = async function waitInQueue(userID) {
     const waitingPromiseFork = new FoPConstructor(), jobPromiseFork = new FoPConstructor();
     const queue = getUserQueue(userID);
     queue.push({
         startJob: waitingPromiseFork.resolve,
         jobPromise: jobPromiseFork.promise
     });
-    if(!queueMaster[userID].isProcessing){ queueHandler(userID);}
+    if (!queueMaster[userID].isProcessing) { queueHandler(userID); }
     return waitingPromiseFork.promise.then(() => jobPromiseFork.resolve);
 };
 
