@@ -27,7 +27,7 @@ async function argumentParser({argumentArray, userID}) {
     const target = targetNumberCandidates[0];
     const diceSides = (diceSideCandidates.length === 1) ? diceSideCandidates[0] : target; //default dice side count is target number
     if (target > diceSides) {
-        throw `${diceSides} yüzlü zarda nasıl ${target} atayım? Düzgünce bir istek yaz lütfen.`;
+        throw `${diceSides} yüzlü zarda nasıl ${target} atayım?`;
     }
 
     if (diceSides > maxDiceSide) {
