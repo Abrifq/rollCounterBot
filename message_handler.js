@@ -71,6 +71,7 @@ Github sayfama bakmak istersen sadece \`${prefix} github\` yazman yeterli!`
     try {
         rollArguments = await argumentParser(rawArguments,message.member.id);
     } catch (errorMessage) {
+        console.log("uh oh");
         return message.channel.send(errorMessage);
     }
     return rollHandler({ arguments: rollArguments, message });

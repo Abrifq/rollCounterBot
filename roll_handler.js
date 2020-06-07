@@ -1,3 +1,4 @@
+"use strict";
 const rollMachine = require("./roll"),
     { inQueueMessageConstructor, beforeRollMessageConstructor, afterRollMessageConstructor } = require("./message_generators"),
     promiseTimerContainer = require("./promise_timer"),
