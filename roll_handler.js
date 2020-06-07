@@ -34,10 +34,12 @@ async function rollHandler({ arguments: { target, diceSides }, message }) {
     const rollCount = await promiseTimerContainer(rollMachine({ target, diceSides }).then(tee),
         () => putElapsedTime.next(),
         6000);
+        await putElapsedTime.return();
     const afterRollMessage = afterRollMessageConstructor({ arguments:{target}, rollCount, userID });
+    await new Promise(resolve=>setImmediate(resolve)); // wait for next tick
     await sentMessage.edit(afterRollMessage)
         .then(messageTee);
-    await putElapsedTime.return();
+    
     return jobFinisher();
 }
 exports = module.exports = rollHandler;
