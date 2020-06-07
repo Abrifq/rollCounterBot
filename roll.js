@@ -13,20 +13,17 @@ const wait1Tick = function () {
 async function roll(max) {
     return Math.ceil(Math.random() * max);
 }
-
-async function getRollCount(targetNumber) {
-    if (typeof targetNumber !== "number") { }
-    if (targetNumber <= 0) { }
 /**
  * @returns {Promise<number>}
  * @param {{target:number,diceSide:number}} parameters
  */
+async function getRollCount({ target, diceSides }) {
     let latestRandomNumber, rolls = 0;
     do {
-        latestRandomNumber = await roll(targetNumber);
+        latestRandomNumber = await roll(diceSides);
         rolls++;
         await wait1Tick();
-    } while (targetNumber !== latestRandomNumber);
+    } while (target !== latestRandomNumber);
     return rolls;
 }
 
