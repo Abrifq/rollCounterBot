@@ -8,39 +8,34 @@ const { maxDiceSide, donators } = require("./config_handler")();
  */
 async function argumentParser(argumentArray, userID) {
     //LOADS OF TODO
-    const targetNumberCandidates = argumentArray.filter(string => !isNaN(string)),
+    const isDonator = donators.includes(userID);
+    const targetNumberCandidates = argumentArray.filter(string => Number(string) > 0).map(Number),
         diceSideCandidates = argumentArray.filter(string => string.startsWith("d") &&
             string.slice(1) &&
-            !isNaN(string.slice(1))
-        ).map(diceSideCandidate => diceSideCandidate.slice(1));
-    if (diceSideCandidates.length > 1) {
+            Number(string.slice(1)) > 0
+        ).map(diceSideCandidate => diceSideCandidate.slice(1)).map(Number);
+    if (diceSideCandidates.length > 1 || targetNumberCandidates.length > 1) {
         throw `Herkese aynı anda birer zar ayırabiliyorum, birer tane yaz, sıranı bekle${
-        donators.includes(userID) ? " aşkım" : ""
-        }.`;
-    }
-    if (targetNumberCandidates.length > 1) {
-        throw `Herkese aynı anda birer zar ayırabiliyorum, birer tane yaz, sıranı bekle${
-        donators.includes(userID) ? " aşkım" : ""
+        isDonator ? " aşkım" : ""
         }.`;
     }
     if (targetNumberCandidates.length === 0) {
         throw `Ee, ne için atıyorum zarı, yazmamışsın${
-        donators.includes(userID) ? " canım" : ""
+        isDonator ? " canım" : ""
         }. Hadi düzgünce bi' daha yaz.`;
     }
     const target = targetNumberCandidates[0];
-    const diceSides = (diceSideCandidates.length === 1) ?
-        diceSideCandidates[0] : target; //default dice side count is target number
+    const diceSides = (diceSideCandidates.length === 1) ? diceSideCandidates[0] : target; //default dice side count is target number
     if (target > diceSides) {
         throw `${diceSides} yüzlü zarda nasıl ${target} atayım? Düzgünce bir istek yaz lütfen.`;
-    } 
+    }
 
     if (diceSides > maxDiceSide) {
         throw `Üzgünüm${
-        donators.includes(userID) ? " aşkım ama" : ","
+        isDonator ? " aşkım ama" : ","
         } atomik zar kolleksiyonum daha gelmedi.
 Şu anda maksimum ${maxDiceSide} yüzlü zarlara bakabiliyorum, onlar da çok küçük ve zaman alıyorlar${
-        donators.includes(userID) ? " canım" : ""
+        isDonator ? " canım" : ""
         }.`;
     }
     return { target, diceSides };

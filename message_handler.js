@@ -69,7 +69,7 @@ Github sayfama bakmak istersen sadece \`${prefix} github\` yazman yeterli!`
     //Going to roll the dice now.
     let rollArguments;
     try {
-        rollArguments = await argumentParser(rawArguments);
+        rollArguments = await argumentParser(rawArguments,message.member.id);
     } catch (errorMessage) {
         return message.channel.send(errorMessage);
     }

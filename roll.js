@@ -15,7 +15,7 @@ async function roll(max) {
 }
 /**
  * @returns {Promise<number>}
- * @param {{target:number,diceSide:number}} parameters
+ * @param {{target:number,diceSides:number}} parameters
  */
 async function getRollCount({ target, diceSides }) {
     let latestRandomNumber, rolls = 0;

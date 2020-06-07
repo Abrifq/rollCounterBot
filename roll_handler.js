@@ -15,7 +15,7 @@ const rollMachine = require("./roll"),
  */
 
 async function rollHandler({ arguments: { target, diceSides }, message, }) {
-    console.log("Valid usage. Rolling for " + target);
+    console.log("Valid usage. Rolling for " + target + " with a "+ diceSides + " sided dice.");
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, arguments: { target, diceSides } });
     const waitingMessage = inQueueMessageConstructor({ userID });
@@ -31,7 +31,7 @@ async function rollHandler({ arguments: { target, diceSides }, message, }) {
             yield;
         }
     })();
-    const rollCount = promiseTimerContainer(rollMachine(arguments).then(tee), () => { return putElapsedTime.next(); }, 1000 * 6);
+    const rollCount = promiseTimerContainer(rollMachine({target,diceSides}).then(tee), () => { return putElapsedTime.next(); }, 1000 * 6);
     const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID }))
         .then(tee);
     await sentMessage.edit(afterRollMessage)
