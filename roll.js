@@ -18,12 +18,13 @@ async function roll(max) {
  * @param {{target:number,diceSides:number}} parameters
  */
 async function getRollCount({ target, diceSides }) {
-    let latestRandomNumber, rolls = 0;
-    do {
+    let latestRandomNumber=-1, rolls = 0;
+    while (target !== latestRandomNumber) {
         latestRandomNumber = await roll(diceSides);
+        console.log(`rolling for ${target} on a ${diceSides} sided dice, got ${latestRandomNumber}`);
         rolls++;
         await wait1Tick();
-    } while (target !== latestRandomNumber);
+    }
     return rolls;
 }
 

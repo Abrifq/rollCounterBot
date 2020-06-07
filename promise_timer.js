@@ -3,6 +3,7 @@
  * @param {Promise<*>} promise - A promise that will eventually resolve.
  * @param {function()=>void} callback A callback function that will have no arguments.
  * @param {number} delay The delay of calling the callback, in milliseconds.
+ * @returns {Promise<*>}
  */
 async function promiseTimerContainer(promise, callback, delay) {
     setImmediate(callback);

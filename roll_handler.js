@@ -14,8 +14,8 @@ const rollMachine = require("./roll"),
  * @param {import("./message_handler").FakeMessage} parameters.message 
  */
 
-async function rollHandler({ arguments: { target, diceSides }, message, }) {
-    console.log("Valid usage. Rolling for " + target + " with a "+ diceSides + " sided dice.");
+async function rollHandler({ arguments: { target, diceSides }, message }) {
+    console.log("Valid usage. Rolling for " + target + " with a " + diceSides + " sided dice.");
     const userID = message.member.id;
     const beforeRollMessage = beforeRollMessageConstructor({ userID, arguments: { target, diceSides } });
     const waitingMessage = inQueueMessageConstructor({ userID });
@@ -23,7 +23,7 @@ async function rollHandler({ arguments: { target, diceSides }, message, }) {
     const jobFinisher = await queueHandler(userID);
     await sentMessage.edit(beforeRollMessage)
         .then(messageTee);
-    const putElapsedTime = (async function* timerCallbackGenerator() {
+    const putElapsedTime = (function* timerCallbackGenerator() {
         let calledTimes = 0; //called every 6 seconds.
         while (true) {
             sentMessage.edit(beforeRollMessage + ` Ben başlayalı ${calledTimes / 10} dakika geçti.`);
@@ -31,9 +31,10 @@ async function rollHandler({ arguments: { target, diceSides }, message, }) {
             yield;
         }
     })();
-    const rollCount = promiseTimerContainer(rollMachine({target,diceSides}).then(tee), () => { return putElapsedTime.next(); }, 1000 * 6);
-    const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID }))
-        .then(tee);
+    const rollCount = await promiseTimerContainer(rollMachine({ target, diceSides }).then(tee),
+        () => putElapsedTime.next(),
+        6000);
+    const afterRollMessage = afterRollMessageConstructor({ arguments:{target}, rollCount, userID });
     await sentMessage.edit(afterRollMessage)
         .then(messageTee);
     await putElapsedTime.return();
