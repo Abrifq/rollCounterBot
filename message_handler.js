@@ -69,10 +69,11 @@ Github sayfama bakmak istersen sadece \`${prefix} github\` yazman yeterli!`
     //Going to roll the dice now.
     let rollArguments;
     try {
+        console.log(rawArguments.join(" "));
         rollArguments = await argumentParser(rawArguments,message.member.id);
     } catch (errorMessage) {
-        console.log("uh oh");
-        return message.channel.send(errorMessage);
+        console.log("oopsie: "+ errorMessage);
+        return message.channel.send("err: "+errorMessage);
     }
     return rollHandler({ arguments: rollArguments, message });
 }
