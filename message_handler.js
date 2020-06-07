@@ -1,12 +1,12 @@
-const rollMachine = require("./roll"),
-    donators = require("./config_handler")().donators,
-    tee = logValue => { console.log(logValue); return logValue; },
-    messageTee= message => { console.log("Sent Message: "+message.content); return message },
+const rollHandler = require("./roll_handler"),
+    maxAllowedDiceSides = require("./config_handler")().maxDiceSide,
+    argumentParser = require("./argumentParser"),
     prefix = "kaçTane",
     validMessage = "valid",
     invalidUsageMessage = "argumentInvalid",
     innerError = "matrixInvalid",
-    ignoreMessage = "mindYourBusiness";
+    ignoreMessage = "mindYourBusiness",
+    isDice = string => string.startsWith("d") && string.slice(1) && Number(string.slice(1)) > 0;
 
 /**@arg {string} messageContent - The content of the incoming message
  * @returns {string} - Returns a string to decide what to do next. 
@@ -15,43 +15,18 @@ function validCommandChecker(messageContent) {
     if (typeof messageContent !== "string") { return innerError }
     if (!messageContent.startsWith(prefix)) { return ignoreMessage }
 
-    const argument = messageContent.split(" ").filter(string => string !== "")[1];
-    if (argument === "github" || argument === "g") { return validMessage } // print github info
-    if (isNaN(argument)) { return invalidUsageMessage }
-    if (Number(argument) > 0) { return validMessage } // roll dice
+    const argumentList = messageContent.split(" ").filter(string => string !== "").slice(1);
+    const firstArgument = argumentList[0];
+    if (firstArgument === "github" || firstArgument === "g") { return validMessage } // print github info
+    if (argumentList.filter(string => Number(string) > 0 || isDice(string)).length) { return validMessage } // roll dice
     return invalidUsageMessage;
 }
-/**
- * @returns {string}
- * @param {{target:number|string,rollCount:number|string,userID:string}} infos 
- */
-function afterRollMessageConstructor({ target, rollCount, userID }) {
-    if (donators.includes(userID)) { return `<@${userID}> aşkom sonunda ${target} attım${rollCount > 1000 ? " ama ancak " : ", "}${rollCount < 100 ? "hem de " : ""}${rollCount}. denemede attım aşkosu.`; }
-    return `<@${userID}>, ${target} sayısı ${rollCount > 100 ? "anca " : ""}${rollCount}. denemede geldi.`;
-}
-/**
- * @returns {string}
- * @param {{target:number|string,userID:string}} infos 
- */
-function beforeRollMessageConstructor({ userID, target }) {
-    if (donators.includes(userID)) { return `<@${userID}> aşkım bana şans dile, atıyorum ${target} yüzlü zarımı, senin için ${target} atacağım bebeğim!${target > 1000 ? " Ama biraz büyük sayı, beklemen gerekebilir aşkoom. :kiss:" : ""}`; }
-    return `<@${userID}>, bana şans dile, ${target} sayısı için ${target} yüzlü zarımı atmaya başladım.${target > 1000 ? " Büyük sayı yani." : ""}`;
-}
 
 /**
- * @desc Calls a function every `delay` milliseconds until the promise resolves. The callback will be called at least once.
- * @param {Promise<*>} promise - A promise that will eventually resolve.
- * @param {function()=>void} callback A callback function that will have no arguments.
- * @param {number} delay The delay of calling the callback, in milliseconds.
+ * @returns {Promise<void> | Promise<FakeMessage>}
+ * @param {FakeMessage} message
+ * @async
  */
-
-async function promiseTimerContainer(promise, callback, delay) {
-    setImmediate(callback);
-    const timerID = setInterval(callback, delay);
-    await promise;
-    clearInterval(timerID);
-    return promise;
-}
 async function messageHandler(message) {
     const messageResponseType = validCommandChecker(message.content);
     if (messageResponseType === ignoreMessage) { return; }
@@ -64,11 +39,18 @@ async function messageHandler(message) {
         return;
     }
     if (messageResponseType === invalidUsageMessage) {
-        message.channel.send(
-            `Öyle yazmayacan, \`${prefix} sayi\` yazacaksın, tabii sayi da 1'den büyük olsun, zar koleksiyonumuz geniş ama o kadar da değil.
-He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar canım.`
+        return message.channel.send(
+            `Koçum öyle yazmıyoruz, gel sana göstereyim.
+\`${prefix} <sayı>\` yaparsan <sayı> yüzlü zarda <sayı> atmaya çalışırım,
+\`${prefix} <sayı> d<yüzSayısı>\` veya \`${prefix} d<yüzSayısı> <sayı>\` yaparsan da <yüzSayısı> yüzlü zarda <sayı> atmaya çalışırım.
+Bunları yapmadan önce, üç koşulum var:
+1) <sayı> en az 1 en fazla ${maxAllowedDiceSides} olabilir.
+2) <yüzSayısı> en az <sayı> en fazla ${maxAllowedDiceSides} olabilir. Bir d6 ile 8 atmamı bekleme lütfen.
+3) Senin için zaten zar sallıyorsam, o sayıyı tutturana kadar senin için başka zar **atmam**.
+
+Github sayfama bakmak istersen sadece \`${prefix} github\` yazman yeterli!`
         );
-        return;
+
     }
     if (messageResponseType !== validMessage) {
         console.info("An error occurred in the validity checking function.");
@@ -78,33 +60,29 @@ He, github sayfama bakmak istersen, \`${prefix} github\` yazman yeter de artar c
         console.groupEnd();
     }
 
-    const argument = message.content.split(" ").filter(string => string !== "")[1];
-    if (argument === "g" || argument === "github") {
+    const rawArguments = message.content.split(" ").filter(string => string !== "").slice(1);
+    if (rawArguments.length === 1 && rawArguments[0] === "g" || rawArguments[0] === "github") {
         message.channel.send("Github'da beni ziyaret edin! https://github.com/fbarda/rollCounterBot");
         return;
     }
-    const target = Number.parseInt(argument);
-    //Going to roll the dice now.
-    console.log("Valid usage. Rolling for " + target);
-    const userID = message.member.id;
-    const beforeRollMessage = beforeRollMessageConstructor({ userID, target });
 
-    const sentMessage = await message.channel.send(beforeRollMessage)
-        .then(messageTee);
-    const putElapsedTime = (async function* timerCallbackGenerator() {
-        let calledTimes = 0;
-        while (true) {
-            sentMessage.edit(beforeRollMessage + ` Ben başlayalı ${calledTimes / 10} dakika geçti.`);
-            calledTimes++;
-            yield;
-        }
-    })();
-    const rollCount = promiseTimerContainer(rollMachine(Number(argument)).then(tee), () => { return putElapsedTime.next(); }, 1000 * 6);
-    const afterRollMessage = await rollCount.then(rollCount => afterRollMessageConstructor({ target, rollCount, userID }))
-        .then(tee);
-    await sentMessage.edit(afterRollMessage)
-        .then(messageTee);
-    await putElapsedTime.return();
-    return;
+    //Going to roll the dice now.
+    let rollArguments;
+    try {
+        rollArguments = await argumentParser(rawArguments);
+    } catch (errorMessage) {
+        return message.channel.send(errorMessage);
+    }
+    return rollHandler({ arguments: rollArguments, message });
 }
 module.exports = exports = messageHandler;
+
+/**@typedef FakeMessage - Simplified version of "Discord.js"s Message class.
+ * @prop {FakeMessageContent} content - Message's content
+ * @prop {Object} member - Message's owner
+ * @prop {string} member.id - Message's owner's id as a snowflake
+ * @prop {(content:FakeMessageContent)=>Promise<FakeMessage>} edit - Changes message's content with the given content. Resolves to new message if successful, however, the original message object can still be used and the resolved message will point to same message if not the same object.
+ * @prop {Object} channel - The channel the message has been sent through.
+ * @prop {(content:FakeMessageContent)=>Promise<FakeMessage>} channel.send - Sends a new message with the given content. Resolves to new message if successful.
+ */
+/**@typedef {string} FakeMessageContent - We are only using the UTF-8 string part, too lazy to define the other (file sending) part. */
