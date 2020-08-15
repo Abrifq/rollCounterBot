@@ -21,7 +21,6 @@ async function getRollCount({ target, diceSides }) {
     let latestRandomNumber=-1, rolls = 0;
     while (target !== latestRandomNumber) {
         latestRandomNumber = await roll(diceSides);
-        console.log(`rolling for ${target} on a ${diceSides} sided dice, got ${latestRandomNumber}`);
         rolls++;
         await wait1Tick();
     }
